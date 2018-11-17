@@ -53,14 +53,14 @@ var renderPlayers = function (ctx, names, times) {
   }
   var maxTime = getMaxElement(times);
   for (var i = 0; i < names.length; i++) {
+    var playerXPosition = X_PLAYER_NAME + (X_PLAYER_NAME_GAP * i);
+    var playerBarYPosition = Y_PLAYER_NAME - Y_PLAYER_NAME_GAP;
+    var barSize = Math.floor((times[i] * MAX_BAR_HEIGHT) / maxTime);
+
     ctx.fillStyle = textColor;
-    ctx.fillText(names[i], X_PLAYER_NAME + (X_PLAYER_NAME_GAP * i), Y_PLAYER_NAME);
-    if (names[i].valueOf('Вы')) {
-      ctx.fillStyle = barColorRed;
-    } else {
-      ctx.fillStyle = getRandomBlue();
-    }
-    ctx.fillRect(X_PLAYER_NAME + (X_PLAYER_NAME_GAP * i), Y_PLAYER_NAME - Y_PLAYER_NAME_GAP, BAR_WIDTH, Math.floor((times[i] * MAX_BAR_HEIGHT) / maxTime));
+    ctx.fillText(names[i], playerPosition, Y_PLAYER_NAME);
+    ctx.fillStyle = names[i].valueOf('Вы') ? barColorRed : getRandomBlue();
+    ctx.fillRect(playerPosition, playerBarYPosition, BAR_WIDTH, barSize);
   }
 };
 
