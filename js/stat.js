@@ -2,15 +2,19 @@
 
 var CLOUD_WIDTH = 420;
 var CLOUD_HEIGHT = 270;
-var X_MESSAGE_POS = 120;
-var Y_MESSAGE_POS = 25;
-var Y_MESSAGE_GAP = 20;
-var X_PLAYER_NAME = 150;
-var Y_PLAYER_NAME = 250;
-var Y_PLAYER_NAME_GAP = 10;
-var X_PLAYER_NAME_GAP = 85;
+var CLOUD_X = 100;
+var CLOUD_Y = 10;
+var CLOUD_GAP = 10;
+var MESSAGE_POS_X = 120;
+var MESSAGE_POS_Y = 25;
+var MESSAGE_GAP_Y = 20;
+var PLAYER_NAME_X = 150;
+var PLAYER_NAME_Y = 250;
+var PLAYER_NAME_GAP_Y = 10;
+var PLAYER_NAME_GAP_X = 85;
 var MAX_BAR_HEIGHT = -150;
 var BAR_WIDTH = 40;
+var CURRENT_PLAYER = 'Вы';
 var whiteColor = '#ffffff';
 var shadowColor = 'rgba(0, 0, 0, 0.7)';
 var textColor = '#000000';
@@ -32,7 +36,7 @@ var renderMessage = function (ctx, textData) {
   ctx.fillStyle = textColor;
   var messageArray = textData.split('\n');
   for (var i = 0; i < messageArray.length; i++) {
-    ctx.fillText(messageArray[i], X_MESSAGE_POS, Y_MESSAGE_POS + (i * Y_MESSAGE_GAP));
+    ctx.fillText(messageArray[i], MESSAGE_POS_X, MESSAGE_POS_Y + (i * MESSAGE_GAP_Y));
   }
 };
 
@@ -53,20 +57,20 @@ var renderPlayers = function (ctx, names, times) {
   }
   var maxTime = getMaxElement(times);
   for (var i = 0; i < names.length; i++) {
-    var playerXPosition = X_PLAYER_NAME + (X_PLAYER_NAME_GAP * i);
-    var playerBarYPosition = Y_PLAYER_NAME - Y_PLAYER_NAME_GAP;
+    var playerXPosition = PLAYER_NAME_X + (PLAYER_NAME_GAP_X * i);
+    var playerBarYPosition = PLAYER_NAME_Y - PLAYER_NAME_GAP_Y;
     var barSize = Math.floor((times[i] * MAX_BAR_HEIGHT) / maxTime);
 
     ctx.fillStyle = textColor;
-    ctx.fillText(names[i], playerPosition, Y_PLAYER_NAME);
-    ctx.fillStyle = names[i].valueOf('Вы') ? barColorRed : getRandomBlue();
-    ctx.fillRect(playerPosition, playerBarYPosition, BAR_WIDTH, barSize);
+    ctx.fillText(names[i], playerXPosition, PLAYER_NAME_Y);
+    ctx.fillStyle = names[i] === CURRENT_PLAYER ? barColorRed : getRandomBlue();
+    ctx.fillRect(playerXPosition, playerBarYPosition, BAR_WIDTH, barSize);
   }
 };
 
 window.renderStatistics = function (ctx, names, times) {
-  renderCloud(ctx, 110, 20, shadowColor);
-  renderCloud(ctx, 100, 10, whiteColor);
+  renderCloud(ctx, CLOUD_X + CLOUD_GAP, CLOUD_Y + CLOUD_GAP, shadowColor);
+  renderCloud(ctx, CLOUD_X, CLOUD_Y, whiteColor);
   renderMessage(ctx, message);
   renderPlayers(ctx, names, times);
 };
