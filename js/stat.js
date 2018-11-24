@@ -38,9 +38,9 @@ var renderMessage = function (ctx, textData) {
   ctx.textBaseline = TEXT_BASELINE;
   ctx.fillStyle = TEXT_COLOR;
 
-  textData.forEach(function(message, i) {
+  textData.forEach(function (message, i) {
     ctx.fillText(message, MESSAGE_POS_X, MESSAGE_POS_Y + (i * MESSAGE_GAP_Y));
-  })
+  });
 };
 
 var getMaxElement = function (arr, limitedLength) {
