@@ -53,15 +53,9 @@ var createWizardFragment = function (templateElement, wizards) {
   return fragment;
 };
 
-var countingInteger = function () {
-  var i = 1;
-
-  return function () {
-    return i++;
-  };
+var createRandomNumber = function (min, max) {
+  return Math.round(min + Math.random() * (max - min));
 };
-
-var getColor = countingInteger();
 
 var popupEscKeydownHandler = function (evt) {
   if (evt.keyCode === KEYCODE_ESC) {
@@ -125,12 +119,12 @@ inputUserNameElement.addEventListener('blur', function () {
 
 wizardElement.addEventListener('click', function (evt) {
   if (evt.target.classList.contains('wizard-coat')) {
-    evt.target.style.fill = WIZARD_COAT_COLOR[getColor() % WIZARD_COAT_COLOR.length];
+    evt.target.style.fill = WIZARD_COAT_COLOR[createRandomNumber(0, WIZARD_COAT_COLOR.length - 1)];
   } else if (evt.target.classList.contains('wizard-eyes')) {
-    evt.target.style.fill = WIZARD_EYES_COLOR[getColor() % WIZARD_EYES_COLOR.length];
+    evt.target.style.fill = WIZARD_EYES_COLOR[createRandomNumber(0, WIZARD_EYES_COLOR.length - 1)];
   }
 });
 
 fireballElement.addEventListener('click', function(evt) {
-  evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[getColor() % FIREBALL_COLOR.length];
+  evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[createRandomNumber(0, FIREBALL_COLOR.length - 1)];
 });
