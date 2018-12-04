@@ -6,8 +6,8 @@ var WIZARD_COAT_COLOR = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 10
 var WIZARD_EYES_COLOR = ['black', 'red', 'blue', 'yellow', 'green'];
 var FIREBALL_COLOR = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var WIZARD_LIMIT = 4;
-var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
+var KEYCODE_ESC = 27;
+var KEYCODE_ENTER = 13;
 
 var createWizard = function () {
   return {
@@ -64,7 +64,7 @@ var countingInteger = function () {
 var getColor = countingInteger();
 
 var popupEscKeydownHandler = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === KEYCODE_ESC) {
     closePopup();
   }
 };
@@ -100,7 +100,7 @@ userModalElementOpen.addEventListener('click', function () {
 });
 
 userModalElementOpen.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
+  if (evt.keyCode === KEYCODE_ENTER) {
     openPopup();
   }
 });
@@ -110,7 +110,7 @@ userModalElementClose.addEventListener('click', function () {
 });
 
 userModalElementClose.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
+  if (evt.keyCode === KEYCODE_ENTER) {
     closePopup();
   }
 });
@@ -124,15 +124,13 @@ inputUserNameElement.addEventListener('blur', function () {
 });
 
 wizardElement.addEventListener('click', function (evt) {
-  var target = evt.target;
-  if (target.classList.contains('wizard-coat')) {
-    target.style.fill = WIZARD_COAT_COLOR[getColor() % WIZARD_COAT_COLOR.length];
-  } else if (target.classList.contains('wizard-eyes')) {
-    target.style.fill = WIZARD_EYES_COLOR[getColor() % WIZARD_EYES_COLOR.length];
+  if (evt.target.classList.contains('wizard-coat')) {
+    evt.target.style.fill = WIZARD_COAT_COLOR[getColor() % WIZARD_COAT_COLOR.length];
+  } else if (evt.target.classList.contains('wizard-eyes')) {
+    evt.target.style.fill = WIZARD_EYES_COLOR[getColor() % WIZARD_EYES_COLOR.length];
   }
 });
 
 fireballElement.addEventListener('click', function(evt) {
-  var currentTarget = evt.currentTarget;
-  currentTarget.style.backgroundColor = FIREBALL_COLOR[getColor() % FIREBALL_COLOR.length];
+  evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[getColor() % FIREBALL_COLOR.length];
 });
