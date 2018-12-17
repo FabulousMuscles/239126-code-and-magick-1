@@ -66,6 +66,11 @@ var popupEscKeydownHandler = function (evt) {
 var openPopup = function () {
   userModalElement.classList.remove('hidden');
   document.addEventListener('keydown', popupEscKeydownHandler);
+  handleElement.addEventListener('mousedown', handleElementMouseDownHandler);
+  wizardElement.addEventListener('click', wizardElementClickHandler);
+  inputUserNameElement.addEventListener('focus', inputUserNameElementFocusHandler);
+  inputUserNameElement.addEventListener('blur', inputUserNameElementBlurHandler);
+  fireballElement.addEventListener('click', fireballElementClickHandler);
   artifactElement.addEventListener('dragstart', artifactDragStartHandler);
   artifactElement.addEventListener('dragend', artifactDragEndHandler);
 };
@@ -74,6 +79,11 @@ var closePopup = function () {
   userModalElement.classList.add('hidden');
   userModalElement.removeAttribute('style');
   document.removeEventListener('keydown', popupEscKeydownHandler);
+  handleElement.removeEventListener('mousedown', handleElementMouseDownHandler);
+  wizardElement.removeEventListener('click', wizardElementClickHandler);
+  inputUserNameElement.removeEventListener('focus', inputUserNameElementFocusHandler);
+  inputUserNameElement.removeEventListener('blur', inputUserNameElementBlurHandler);
+  fireballElement.removeEventListener('click', fireballElementClickHandler);
   artifactElement.removeEventListener('dragstart', artifactDragStartHandler);
   artifactElement.removeEventListener('dragend', artifactDragEndHandler);
 };
@@ -96,6 +106,14 @@ var userModalElementCloseKeydownHandler = function (evt) {
   if (evt.keyCode === KEYCODE_ENTER) {
     closePopup();
   }
+};
+
+var inputUserNameElementFocusHandler = function () {
+  document.removeEventListener('keydown', popupEscKeydownHandler);
+};
+
+var inputUserNameElementBlurHandler = function () {
+  document.addEventListener('keydown', popupEscKeydownHandler);
 };
 
 var wizardElementClickHandler = function (evt) {
@@ -233,19 +251,4 @@ userModalElementClose.addEventListener('click', userModalElementCloseClickHandle
 
 userModalElementClose.addEventListener('keydown', userModalElementCloseKeydownHandler);
 
-inputUserNameElement.addEventListener('focus', function () {
-  document.removeEventListener('keydown', popupEscKeydownHandler);
-});
-
-inputUserNameElement.addEventListener('blur', function () {
-  document.addEventListener('keydown', popupEscKeydownHandler);
-});
-
 wizardElement.addEventListener('click', wizardElementClickHandler);
-
-fireballElement.addEventListener('click', fireballElementClickHandler);
-
-handleElement.addEventListener('mousedown', handleElementMouseDownHandler);
-
-artifactElement.addEventListener('dragstart', artifactDragStartHandler);
-artifactElement.addEventListener('dragend', artifactDragEndHandler);
