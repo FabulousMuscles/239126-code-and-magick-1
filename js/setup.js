@@ -46,7 +46,7 @@ var createWizardFragment = function (templateElement, wizards) {
 
   wizards.forEach(function (wizard) {
     fragment.appendChild(
-      createWizardElement(templateElement, wizard)
+        createWizardElement(templateElement, wizard)
     );
   });
 
@@ -66,11 +66,159 @@ var popupEscKeydownHandler = function (evt) {
 var openPopup = function () {
   userModalElement.classList.remove('hidden');
   document.addEventListener('keydown', popupEscKeydownHandler);
+  handleElement.addEventListener('mousedown', handleElementMouseDownHandler);
+  wizardElement.addEventListener('click', wizardElementClickHandler);
+  inputUserNameElement.addEventListener('focus', inputUserNameElementFocusHandler);
+  inputUserNameElement.addEventListener('blur', inputUserNameElementBlurHandler);
+  fireballElement.addEventListener('click', fireballElementClickHandler);
+  artifactElement.addEventListener('dragstart', artifactDragStartHandler);
+  artifactElement.addEventListener('dragend', artifactDragEndHandler);
 };
 
 var closePopup = function () {
   userModalElement.classList.add('hidden');
+  userModalElement.removeAttribute('style');
   document.removeEventListener('keydown', popupEscKeydownHandler);
+  handleElement.removeEventListener('mousedown', handleElementMouseDownHandler);
+  wizardElement.removeEventListener('click', wizardElementClickHandler);
+  inputUserNameElement.removeEventListener('focus', inputUserNameElementFocusHandler);
+  inputUserNameElement.removeEventListener('blur', inputUserNameElementBlurHandler);
+  fireballElement.removeEventListener('click', fireballElementClickHandler);
+  artifactElement.removeEventListener('dragstart', artifactDragStartHandler);
+  artifactElement.removeEventListener('dragend', artifactDragEndHandler);
+};
+
+var userModalElementOpenKeydownHandler = function (evt) {
+  if (evt.keyCode === KEYCODE_ENTER) {
+    openPopup();
+  }
+};
+
+var userModalElementOpenClickHandler = function () {
+  openPopup();
+};
+
+var userModalElementCloseClickHandler = function () {
+  closePopup();
+};
+
+var userModalElementCloseKeydownHandler = function (evt) {
+  if (evt.keyCode === KEYCODE_ENTER) {
+    closePopup();
+  }
+};
+
+var inputUserNameElementFocusHandler = function () {
+  document.removeEventListener('keydown', popupEscKeydownHandler);
+};
+
+var inputUserNameElementBlurHandler = function () {
+  document.addEventListener('keydown', popupEscKeydownHandler);
+};
+
+var wizardElementClickHandler = function (evt) {
+  if (evt.target.classList.contains('wizard-coat')) {
+    evt.target.style.fill = WIZARD_COAT_COLOR[createRandomNumber(0, WIZARD_COAT_COLOR.length - 1)];
+  } else if (evt.target.classList.contains('wizard-eyes')) {
+    evt.target.style.fill = WIZARD_EYES_COLOR[createRandomNumber(0, WIZARD_EYES_COLOR.length - 1)];
+  }
+};
+
+var fireballElementClickHandler = function (evt) {
+  evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[createRandomNumber(0, FIREBALL_COLOR.length - 1)];
+};
+
+var handleElementMouseDownHandler = function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var dragged = false;
+
+  var handleElementMouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    userModalElement.style.top = (userModalElement.offsetTop - shift.y) + 'px';
+    userModalElement.style.left = (userModalElement.offsetLeft - shift.x) + 'px';
+  };
+
+  var handleElementMouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', handleElementMouseMoveHandler);
+    document.removeEventListener('mouseup', handleElementMouseUpHandler);
+
+    if (dragged) {
+      var clickHandlerPreventDefault = function (clickEvt) {
+        clickEvt.preventDefault();
+        handleElement.removeEventListener('click', clickHandlerPreventDefault);
+      };
+      handleElement.addEventListener('click', clickHandlerPreventDefault);
+    }
+  };
+
+  document.addEventListener('mousemove', handleElementMouseMoveHandler);
+  document.addEventListener('mouseup', handleElementMouseUpHandler);
+};
+
+var playerBackpackDragOverHandler = function (evt) {
+  evt.preventDefault();
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.style.backgroundColor = 'yellow';
+  }
+};
+
+var playerBackpackDragEnterHandler = function (evt) {
+  evt.preventDefault();
+};
+
+var playerBackpackDragLeaveHandler = function (evt) {
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.removeAttribute('style');
+  }
+};
+
+var playerBackpackDropHandler = function (evt) {
+  evt.preventDefault();
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.removeAttribute('style');
+    evt.target.append(artifactElement);
+  }
+};
+
+var initializeDragging = function () {
+  playerBackpackElement.addEventListener('dragover', playerBackpackDragOverHandler);
+  playerBackpackElement.addEventListener('dragenter', playerBackpackDragEnterHandler);
+  playerBackpackElement.addEventListener('dragleave', playerBackpackDragLeaveHandler);
+  playerBackpackElement.addEventListener('drop', playerBackpackDropHandler);
+};
+
+var unitializeDragging = function () {
+  playerBackpackElement.removeEventListener('dragover', playerBackpackDragOverHandler);
+  playerBackpackElement.removeEventListener('dragenter', playerBackpackDragEnterHandler);
+  playerBackpackElement.removeEventListener('dragleave', playerBackpackDragLeaveHandler);
+  playerBackpackElement.removeEventListener('drop', playerBackpackDropHandler);
+};
+
+var artifactDragStartHandler = function () {
+  initializeDragging();
+};
+
+var artifactDragEndHandler = function () {
+  unitializeDragging();
 };
 
 var userModalElement = document.querySelector('.setup');
@@ -82,6 +230,12 @@ var userModalElementClose = userModalElement.querySelector('.setup-close');
 var inputUserNameElement = userModalElement.querySelector('.setup-user-name');
 var wizardElement = userModalElement.querySelector('.wizard');
 var fireballElement = userModalElement.querySelector('.setup-fireball-wrap');
+var handleElement = userModalElement.querySelector('.upload');
+
+var playerElement = document.querySelector('.setup-player');
+var shopElement = document.querySelector('.setup-artifacts-shop');
+var artifactElement = shopElement.querySelector('img');
+var playerBackpackElement = playerElement.querySelector('.setup-artifacts');
 
 var wizards = createWizards();
 var wizardFragment = createWizardFragment(wizardTemplateElement, wizards);
@@ -89,42 +243,12 @@ var wizardFragment = createWizardFragment(wizardTemplateElement, wizards);
 userModalElement.querySelector('.setup-similar').classList.remove('hidden');
 similarListItemElement.appendChild(wizardFragment);
 
-userModalElementOpen.addEventListener('click', function () {
-  openPopup();
-});
+userModalElementOpen.addEventListener('click', userModalElementOpenClickHandler);
 
-userModalElementOpen.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === KEYCODE_ENTER) {
-    openPopup();
-  }
-});
+userModalElementOpen.addEventListener('keydown', userModalElementOpenKeydownHandler);
 
-userModalElementClose.addEventListener('click', function () {
-  closePopup();
-});
+userModalElementClose.addEventListener('click', userModalElementCloseClickHandler);
 
-userModalElementClose.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === KEYCODE_ENTER) {
-    closePopup();
-  }
-});
+userModalElementClose.addEventListener('keydown', userModalElementCloseKeydownHandler);
 
-inputUserNameElement.addEventListener('focus', function () {
-  document.removeEventListener('keydown', popupEscKeydownHandler);
-});
-
-inputUserNameElement.addEventListener('blur', function () {
-  document.addEventListener('keydown', popupEscKeydownHandler);
-});
-
-wizardElement.addEventListener('click', function (evt) {
-  if (evt.target.classList.contains('wizard-coat')) {
-    evt.target.style.fill = WIZARD_COAT_COLOR[createRandomNumber(0, WIZARD_COAT_COLOR.length - 1)];
-  } else if (evt.target.classList.contains('wizard-eyes')) {
-    evt.target.style.fill = WIZARD_EYES_COLOR[createRandomNumber(0, WIZARD_EYES_COLOR.length - 1)];
-  }
-});
-
-fireballElement.addEventListener('click', function(evt) {
-  evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[createRandomNumber(0, FIREBALL_COLOR.length - 1)];
-});
+wizardElement.addEventListener('click', wizardElementClickHandler);
