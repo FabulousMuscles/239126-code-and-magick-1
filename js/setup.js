@@ -46,7 +46,7 @@ var createWizardFragment = function (templateElement, wizards) {
 
   wizards.forEach(function (wizard) {
     fragment.appendChild(
-      createWizardElement(templateElement, wizard)
+        createWizardElement(templateElement, wizard)
     );
   });
 
@@ -102,7 +102,7 @@ var wizardElementClickHandler = function (evt) {
   }
 };
 
-var fireballElementClickHandler = function(evt) {
+var fireballElementClickHandler = function (evt) {
   evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[createRandomNumber(0, FIREBALL_COLOR.length - 1)];
 };
 
@@ -140,52 +140,54 @@ var handleElementMouseDownHandler = function (evt) {
     document.removeEventListener('mouseup', handleElementMouseUpHandler);
 
     if (dragged) {
-        var clickHandlerPreventDefault = function (evt) {
-          evt.preventDefault();
-          handleElement.removeEventListener('click', clickHandlerPreventDefault)
-        };
-        handleElement.addEventListener('click', clickHandlerPreventDefault);
-      }
+      var clickHandlerPreventDefault = function (clickEvt) {
+        clickEvt.preventDefault();
+        handleElement.removeEventListener('click', clickHandlerPreventDefault);
+      };
+      handleElement.addEventListener('click', clickHandlerPreventDefault);
+    }
   };
 
   document.addEventListener('mousemove', handleElementMouseMoveHandler);
   document.addEventListener('mouseup', handleElementMouseUpHandler);
 };
 
-var backpackCellDragOverHandler = function (evt) {
+var playerBackpackDragOverHandler = function (evt) {
   evt.preventDefault();
-  this.style.backgroundColor = 'yellow';
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.style.backgroundColor = 'yellow';
+  }
 };
 
-var backpackCellDragEnterHandler = function (evt) {
+var playerBackpackDragEnterHandler = function (evt) {
   evt.preventDefault();
 };
 
-var backpackCellDragLeaveHandler = function () {
-  this.removeAttribute('style');
+var playerBackpackDragLeaveHandler = function (evt) {
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.removeAttribute('style');
+  }
 };
 
-var backpackCellDropHandler = function (evt) {
-  this.removeAttribute('style');
-  this.append(artifactElement);
+var playerBackpackDropHandler = function (evt) {
+  if (evt.target.classList.contains('setup-artifacts-cell')) {
+    evt.target.removeAttribute('style');
+    evt.target.append(artifactElement);
+  }
 };
 
 var initializeDragging = function () {
-  Array.prototype.forEach.call(playerBackpackCellElements, function(backpackCell) {
-   backpackCell.addEventListener('dragover', backpackCellDragOverHandler);
-   backpackCell.addEventListener('dragenter', backpackCellDragEnterHandler);
-   backpackCell.addEventListener('dragleave', backpackCellDragLeaveHandler);
-   backpackCell.addEventListener('drop', backpackCellDropHandler);
-  });
+  playerBackpackElement.addEventListener('dragover', playerBackpackDragOverHandler);
+  playerBackpackElement.addEventListener('dragenter', playerBackpackDragEnterHandler);
+  playerBackpackElement.addEventListener('dragleave', playerBackpackDragLeaveHandler);
+  playerBackpackElement.addEventListener('drop', playerBackpackDropHandler);
 };
 
 var unitializeDragging = function () {
-  Array.prototype.forEach.call(playerBackpackCellElements, function(backpackCell) {
-   backpackCell.removeEventListener('dragover', backpackCellDragOverHandler);
-   backpackCell.removeEventListener('dragenter', backpackCellDragEnterHandler);
-   backpackCell.removeEventListener('dragleave', backpackCellDragLeaveHandler);
-   backpackCell.removeEventListener('drop', backpackCellDropHandler);
-  });
+  playerBackpackElement.removeEventListener('dragover', playerBackpackDragOverHandler);
+  playerBackpackElement.removeEventListener('dragenter', playerBackpackDragEnterHandler);
+  playerBackpackElement.removeEventListener('dragleave', playerBackpackDragLeaveHandler);
+  playerBackpackElement.removeEventListener('drop', playerBackpackDropHandler);
 };
 
 var artifactDragStartHandler = function () {
@@ -210,7 +212,7 @@ var handleElement = userModalElement.querySelector('.upload');
 var playerElement = document.querySelector('.setup-player');
 var shopElement = document.querySelector('.setup-artifacts-shop');
 var artifactElement = shopElement.querySelector('img');
-var playerBackpackCellElements = playerElement.querySelectorAll('.setup-artifacts-cell');
+var playerBackpackElement = playerElement.querySelector('.setup-artifacts');
 
 var wizards = createWizards();
 var wizardFragment = createWizardFragment(wizardTemplateElement, wizards);
