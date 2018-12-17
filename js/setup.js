@@ -46,7 +46,7 @@ var createWizardFragment = function (templateElement, wizards) {
 
   wizards.forEach(function (wizard) {
     fragment.appendChild(
-        createWizardElement(templateElement, wizard)
+      createWizardElement(templateElement, wizard)
     );
   });
 
@@ -70,6 +70,7 @@ var openPopup = function () {
 
 var closePopup = function () {
   userModalElement.classList.add('hidden');
+  userModalElement.removeAttribute('style');
   document.removeEventListener('keydown', popupEscKeydownHandler);
 };
 
@@ -101,60 +102,100 @@ var wizardElementClickHandler = function (evt) {
   }
 };
 
-var fireballElementClickHandler = function (evt) {
+var fireballElementClickHandler = function(evt) {
   evt.currentTarget.style.backgroundColor = FIREBALL_COLOR[createRandomNumber(0, FIREBALL_COLOR.length - 1)];
 };
 
 var handleElementMouseDownHandler = function (evt) {
   evt.preventDefault();
 
-  startCoords = {
+  var startCoords = {
     x: evt.clientX,
     y: evt.clientY
   };
 
-  dragged = false;
+  var dragged = false;
+
+  var handleElementMouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    userModalElement.style.top = (userModalElement.offsetTop - shift.y) + 'px';
+    userModalElement.style.left = (userModalElement.offsetLeft - shift.x) + 'px';
+  };
+
+  var handleElementMouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', handleElementMouseMoveHandler);
+    document.removeEventListener('mouseup', handleElementMouseUpHandler);
+
+    if (dragged) {
+        var clickHandlerPreventDefault = function (evt) {
+          evt.preventDefault();
+          handleElement.removeEventListener('click', clickHandlerPreventDefault)
+        };
+        handleElement.addEventListener('click', clickHandlerPreventDefault);
+      }
+  };
 
   document.addEventListener('mousemove', handleElementMouseMoveHandler);
   document.addEventListener('mouseup', handleElementMouseUpHandler);
 };
 
-var handleElementMouseUpHandler = function (evt) {
+var backpackCellDragOverHandler = function (evt) {
   evt.preventDefault();
-
-  document.removeEventListener('mousemove', handleElementMouseMoveHandler);
-  document.removeEventListener('mouseup', handleElementMouseUpHandler);
-
-  if (dragged) {
-    var clickHandlerPreventDefault = function (clickEvt) {
-      clickEvt.preventDefault();
-      handleElement.removeEventListener('click', clickHandlerPreventDefault);
-    };
-    handleElement.addEventListener('click', clickHandlerPreventDefault);
-  }
+  this.style.backgroundColor = 'yellow';
 };
 
-
-var handleElementMouseMoveHandler = function (evt) {
+var backpackCellDragEnterHandler = function (evt) {
   evt.preventDefault();
-  dragged = true;
-  var shift = {
-    x: startCoords.x - evt.clientX,
-    y: startCoords.y - evt.clientY
-  };
-
-  startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
-
-  userModalElement.style.top = (userModalElement.offsetTop - shift.y) + 'px';
-  userModalElement.style.left = (userModalElement.offsetLeft - shift.x) + 'px';
 };
 
+var backpackCellDragLeaveHandler = function () {
+  this.removeAttribute('style');
+};
 
-var startCoords;
-var dragged;
+var backpackCellDropHandler = function (evt) {
+  this.removeAttribute('style');
+  this.append(artifactElement);
+};
+
+var initializeDragging = function () {
+  Array.prototype.forEach.call(playerBackpackCellElements, function(backpackCell) {
+   backpackCell.addEventListener('dragover', backpackCellDragOverHandler);
+   backpackCell.addEventListener('dragenter', backpackCellDragEnterHandler);
+   backpackCell.addEventListener('dragleave', backpackCellDragLeaveHandler);
+   backpackCell.addEventListener('drop', backpackCellDropHandler);
+  });
+};
+
+var unitializeDragging = function () {
+  Array.prototype.forEach.call(playerBackpackCellElements, function(backpackCell) {
+   backpackCell.removeEventListener('dragover', backpackCellDragOverHandler);
+   backpackCell.removeEventListener('dragenter', backpackCellDragEnterHandler);
+   backpackCell.removeEventListener('dragleave', backpackCellDragLeaveHandler);
+   backpackCell.removeEventListener('drop', backpackCellDropHandler);
+  });
+};
+
+var artifactDragStartHandler = function () {
+  initializeDragging();
+};
+
+var artifactDragEndHandler = function () {
+  unitializeDragging();
+};
+
 var userModalElement = document.querySelector('.setup');
 var similarListItemElement = userModalElement.querySelector('.setup-similar-list');
 var wizardTemplateElement = document.querySelector('#similar-wizard-template').content
@@ -165,6 +206,11 @@ var inputUserNameElement = userModalElement.querySelector('.setup-user-name');
 var wizardElement = userModalElement.querySelector('.wizard');
 var fireballElement = userModalElement.querySelector('.setup-fireball-wrap');
 var handleElement = userModalElement.querySelector('.upload');
+
+var playerElement = document.querySelector('.setup-player');
+var shopElement = document.querySelector('.setup-artifacts-shop');
+var artifactElement = shopElement.querySelector('img');
+var playerBackpackCellElements = playerElement.querySelectorAll('.setup-artifacts-cell');
 
 var wizards = createWizards();
 var wizardFragment = createWizardFragment(wizardTemplateElement, wizards);
@@ -193,3 +239,6 @@ wizardElement.addEventListener('click', wizardElementClickHandler);
 fireballElement.addEventListener('click', fireballElementClickHandler);
 
 handleElement.addEventListener('mousedown', handleElementMouseDownHandler);
+
+artifactElement.addEventListener('dragstart', artifactDragStartHandler);
+artifactElement.addEventListener('dragend', artifactDragEndHandler);
