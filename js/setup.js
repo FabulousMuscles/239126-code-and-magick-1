@@ -66,12 +66,16 @@ var popupEscKeydownHandler = function (evt) {
 var openPopup = function () {
   userModalElement.classList.remove('hidden');
   document.addEventListener('keydown', popupEscKeydownHandler);
+  artifactElement.addEventListener('dragstart', artifactDragStartHandler);
+  artifactElement.addEventListener('dragend', artifactDragEndHandler);
 };
 
 var closePopup = function () {
   userModalElement.classList.add('hidden');
   userModalElement.removeAttribute('style');
   document.removeEventListener('keydown', popupEscKeydownHandler);
+  artifactElement.removeEventListener('dragstart', artifactDragStartHandler);
+  artifactElement.removeEventListener('dragend', artifactDragEndHandler);
 };
 
 var userModalElementOpenKeydownHandler = function (evt) {
@@ -170,6 +174,7 @@ var playerBackpackDragLeaveHandler = function (evt) {
 };
 
 var playerBackpackDropHandler = function (evt) {
+  evt.preventDefault();
   if (evt.target.classList.contains('setup-artifacts-cell')) {
     evt.target.removeAttribute('style');
     evt.target.append(artifactElement);
