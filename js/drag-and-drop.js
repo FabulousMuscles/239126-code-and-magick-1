@@ -47,7 +47,7 @@
     unitializeDragging();
   };
 
-    var handleElementMouseDownHandler = function (evt) {
+  var handleElementMouseDownHandler = function (evt) {
     evt.preventDefault();
 
     var startCoords = {

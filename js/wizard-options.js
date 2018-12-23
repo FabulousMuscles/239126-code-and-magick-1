@@ -31,6 +31,6 @@
     removeFireballChangeColorHandler: function () {
       fireballElement.removeEventListener('click', fireballElementClickHandler);
     }
-  }
+  };
 
 })();

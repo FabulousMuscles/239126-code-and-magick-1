@@ -19,7 +19,6 @@
     document.removeEventListener('keydown', popupEscKeydownHandler);
     inputUserNameElement.removeEventListener('focus', inputUserNameElementFocusHandler);
     inputUserNameElement.removeEventListener('blur', inputUserNameElementBlurHandler);
-    fireballElement.removeEventListener('click', fireballElementClickHandler);
     window.wizardOptions.removeWizardChangeColorHandler();
     window.wizardOptions.removeFireballChangeColorHandler();
     window.dragAndDrop.removeHandleElementMouseDown();
